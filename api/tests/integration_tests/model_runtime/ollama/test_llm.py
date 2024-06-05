@@ -12,7 +12,7 @@ from core.model_runtime.entities.message_entities import (
     UserPromptMessage,
 )
 from core.model_runtime.errors.validate import CredentialsValidateFailedError
-from core.model_runtime.model_providers.ollama.llm.llm import OllamaLargeLanguageModel
+from core.model_runtime.model_providers.crossnow.llm.llm import OllamaLargeLanguageModel
 
 
 def test_validate_credentials():

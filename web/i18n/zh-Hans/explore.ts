@@ -1,5 +1,5 @@
 const translation = {
-  title: '探索',
+  title: '寻找',
   sidebar: {
     discovery: '发现',
     chat: '智聊',
@@ -16,7 +16,7 @@ const translation = {
     },
   },
   apps: {
-    title: '探索 Dify 的应用',
+    title: '应用模版库',
     description: '使用这些模板应用程序，或根据模板自定义您自己的应用程序。',
     allCategories: '推荐',
   },

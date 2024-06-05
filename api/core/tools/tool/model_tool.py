@@ -28,6 +28,7 @@ I require a powerful vision language model for an image recognition task. The mo
 - For each task, provide confidence scores or relevance scores for the model outputs to assess the reliability of the results.
 - If necessary, pose specific questions for different tasks to guide the model in better understanding the images and providing relevant information."""
 
+
 class ModelTool(Tool):
     class ModelToolType(Enum):
         """
@@ -37,9 +38,9 @@ class ModelTool(Tool):
 
     model_configuration: dict[str, Any] = None
     tool_type: ModelToolType
-    
-    def __init__(self, model_instance: ModelInstance = None, model: str = None, 
-                 tool_type: ModelToolType = ModelToolType.VISION, 
+
+    def __init__(self, model_instance: ModelInstance = None, model: str = None,
+                 tool_type: ModelToolType = ModelToolType.VISION,
                  properties: dict[ModelToolPropertyKey, Any] = None,
                  **kwargs):
         """
@@ -56,6 +57,7 @@ class ModelTool(Tool):
     """
     Model tool
     """
+
     def fork_tool_runtime(self, meta: dict[str, Any]) -> 'Tool':
         """
             fork a new tool with meta data
@@ -88,15 +90,16 @@ class ModelTool(Tool):
         model_instance = self.model_configuration['model_instance']
         if not model_instance:
             return self.create_text_message('the tool is not configured correctly')
-        
+
         if self.tool_type == ModelTool.ModelToolType.VISION:
             return self._invoke_llm_vision(user_id, tool_parameters)
         else:
             return self.create_text_message('the tool is not configured correctly')
-        
+
     def _invoke_llm_vision(self, user_id: str, tool_parameters: dict[str, Any]) -> ToolInvokeMessage | list[ToolInvokeMessage]:
         # get image
-        image_parameter_name = self.model_configuration['properties'].get(ModelToolPropertyKey.IMAGE_PARAMETER_NAME, 'image_id')
+        image_parameter_name = self.model_configuration['properties'].get(
+            ModelToolPropertyKey.IMAGE_PARAMETER_NAME, 'image_id')
         image_id = tool_parameters.pop(image_parameter_name, '')
         if not image_id:
             image = self.get_default_image_variable()
@@ -108,15 +111,15 @@ class ModelTool(Tool):
                 image = self.get_default_image_variable()
                 if not image:
                     return self.create_text_message('Please upload an image or input image_id')
-        
+
         if not image:
             return self.create_text_message('Please upload an image or input image_id')
-        
+
         # get image
         image = self.get_variable_file(image.name)
         if not image:
             return self.create_text_message('Failed to get image')
-        
+
         # organize prompt messages
         prompt_messages = [
             SystemPromptMessage(
@@ -136,7 +139,8 @@ class ModelTool(Tool):
             )
         ]
 
-        llm_instance = cast(LargeLanguageModel, self.model_configuration['model_instance'])
+        llm_instance = cast(LargeLanguageModel,
+                            self.model_configuration['model_instance'])
         result: LLMResult = llm_instance.invoke(
             model=self.model_configuration['model'],
             credentials=self.runtime.credentials,
@@ -150,10 +154,10 @@ class ModelTool(Tool):
 
         if not result:
             return self.create_text_message('Failed to extract information from the image')
-        
+
         # get result
         content = result.message.content
         if not content:
             return self.create_text_message('Failed to extract information from the image')
-        
+
         return self.create_text_message(content)

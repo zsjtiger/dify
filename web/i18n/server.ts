@@ -32,7 +32,6 @@ export async function useTranslation(lng: Locale, ns = '', options: Record<strin
 
 export const getLocaleOnServer = (): Locale => {
   const locales: string[] = i18n.locales
-
   let languages: string[] | undefined
   // get locale from cookie
   const localeCookie = cookies().get('locale')
